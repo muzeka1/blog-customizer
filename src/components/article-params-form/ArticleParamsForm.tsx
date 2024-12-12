@@ -1,6 +1,6 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Separator } from 'src/ui/separator';
 import { Select } from 'src/ui/select';
@@ -14,7 +14,6 @@ import {
 	defaultArticleState,
 	OptionsObject,
 } from 'src/constants/articleProps';
-import { Spacing } from 'src/ui/spacing/Spacing';
 import { RadioGroup } from 'src/ui/radio-group';
 
 import styles from './ArticleParamsForm.module.scss';
@@ -26,9 +25,35 @@ type ArticleParamsFormProps = {
 export const ArticleParamsForm = ({ setData }: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [options, setOptions] = useState<OptionsObject>(defaultArticleState);
+	const container = useRef<HTMLElement | null>(null);
+
+	useEffect(() => {
+		let isInitial = true;
+		const handleClose = (e: MouseEvent) => {
+			const target = e.target as HTMLElement;
+			if (isInitial) {
+				isInitial = !isInitial;
+				return;
+			}
+			if (
+				!(
+					container.current?.contains(target) || target.closest('[data-testid]')
+				)
+			) {
+				setIsOpen(false);
+			}
+		};
+		if (isOpen) {
+			document.addEventListener('click', handleClose);
+		}
+
+		return () => {
+			document.removeEventListener('click', handleClose);
+		};
+	}, [isOpen]);
 
 	function openHandler() {
-		setIsOpen((prev) => !prev);
+		setIsOpen(true);
 	}
 
 	function submitHandler(e: SyntheticEvent) {
@@ -76,6 +101,7 @@ export const ArticleParamsForm = ({ setData }: ArticleParamsFormProps) => {
 				}}
 			/>
 			<aside
+				ref={container}
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form
 					className={styles.form}
@@ -86,28 +112,23 @@ export const ArticleParamsForm = ({ setData }: ArticleParamsFormProps) => {
 						selected={options.fontFamilyOption}
 						options={fontFamilyOptions}
 						onChange={changeFontFamily}></Select>
-					<Spacing></Spacing>
 					<RadioGroup
 						options={fontSizeOptions}
 						selected={options.fontSizeOption}
 						title='размер шрифта'
 						name='font-size'
 						onChange={changeFontSize}></RadioGroup>
-					<Spacing></Spacing>
 					<Select
 						title='цвет шрифта'
 						selected={options.fontColor}
 						options={fontColors}
 						onChange={changeFontColor}></Select>
-					<Spacing></Spacing>
 					<Separator></Separator>
-					<Spacing></Spacing>
 					<Select
 						title='цвет фона'
 						selected={options.backgroundColor}
 						options={backgroundColors}
 						onChange={changeBackgroundColor}></Select>
-					<Spacing></Spacing>
 					<Select
 						title='ширина контента'
 						selected={options.contentWidth}
