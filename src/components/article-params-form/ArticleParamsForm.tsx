@@ -1,6 +1,6 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import { SyntheticEvent, useState, useCallback } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import clsx from 'clsx';
 import { Separator } from 'src/ui/separator';
 import { Select } from 'src/ui/select';
@@ -20,20 +20,12 @@ import { RadioGroup } from 'src/ui/radio-group';
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
-	setDataHandler: (options: OptionsObject) => void;
+	setData: (options: OptionsObject) => void;
 };
 
-export const ArticleParamsForm = ({
-	setDataHandler,
-}: ArticleParamsFormProps) => {
+export const ArticleParamsForm = ({ setData }: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false);
-	const [options, setOptions] = useState<OptionsObject>({
-		fontFamily: defaultArticleState.fontFamilyOption,
-		fontSize: defaultArticleState.fontSizeOption,
-		fontColor: defaultArticleState.fontColor,
-		containerWidth: defaultArticleState.contentWidth,
-		backgroundColor: defaultArticleState.backgroundColor,
-	});
+	const [options, setOptions] = useState<OptionsObject>(defaultArticleState);
 
 	function openHandler() {
 		setIsOpen((prev) => !prev);
@@ -41,8 +33,14 @@ export const ArticleParamsForm = ({
 
 	function submitHandler(e: SyntheticEvent) {
 		e.preventDefault();
+		setData(options);
 		setIsOpen(false);
-		setDataHandler(options);
+	}
+
+	function resetHandler() {
+		setOptions(defaultArticleState);
+		setData(defaultArticleState);
+		setIsOpen(false);
 	}
 
 	function updateOptionsState(key: string, value: OptionType) {
@@ -50,11 +48,11 @@ export const ArticleParamsForm = ({
 	}
 
 	function changeFontFamily(selected: OptionType) {
-		updateOptionsState('fontFamily', selected);
+		updateOptionsState('fontFamilyOption', selected);
 	}
 
 	function changeFontSize(selected: OptionType) {
-		updateOptionsState('fontSize', selected);
+		updateOptionsState('fontSizeOption', selected);
 	}
 
 	function changeFontColor(selected: OptionType) {
@@ -66,7 +64,7 @@ export const ArticleParamsForm = ({
 	}
 
 	function changeContentWidth(selected: OptionType) {
-		updateOptionsState('containerWidth', selected);
+		updateOptionsState('contentWidth', selected);
 	}
 
 	return (
@@ -79,16 +77,19 @@ export const ArticleParamsForm = ({
 			/>
 			<aside
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
-				<form className={styles.form} onSubmit={submitHandler}>
+				<form
+					className={styles.form}
+					onSubmit={submitHandler}
+					onReset={resetHandler}>
 					<Select
 						title='шрифт'
-						selected={options.fontFamily}
+						selected={options.fontFamilyOption}
 						options={fontFamilyOptions}
 						onChange={changeFontFamily}></Select>
 					<Spacing></Spacing>
 					<RadioGroup
 						options={fontSizeOptions}
-						selected={options.fontSize}
+						selected={options.fontSizeOption}
 						title='размер шрифта'
 						name='font-size'
 						onChange={changeFontSize}></RadioGroup>
@@ -109,7 +110,7 @@ export const ArticleParamsForm = ({
 					<Spacing></Spacing>
 					<Select
 						title='ширина контента'
-						selected={options.containerWidth}
+						selected={options.contentWidth}
 						options={contentWidthArr}
 						onChange={changeContentWidth}></Select>
 					<div className={styles.bottomContainer}>

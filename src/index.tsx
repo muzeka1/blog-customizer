@@ -13,15 +13,9 @@ const domNode = document.getElementById('root') as HTMLDivElement;
 const root = createRoot(domNode);
 
 const App = () => {
-	const [options, setOptions] = useState<OptionsObject>({
-		fontFamily: defaultArticleState.fontFamilyOption,
-		fontSize: defaultArticleState.fontSizeOption,
-		fontColor: defaultArticleState.fontColor,
-		containerWidth: defaultArticleState.contentWidth,
-		backgroundColor: defaultArticleState.backgroundColor,
-	});
+	const [options, setOptions] = useState<OptionsObject>(defaultArticleState);
 
-	function submitHandler(options: OptionsObject) {
+	function setData(options: OptionsObject) {
 		setOptions(options);
 	}
 
@@ -30,14 +24,14 @@ const App = () => {
 			className={clsx(styles.main)}
 			style={
 				{
-					'--font-family': options.fontFamily.value,
-					'--font-size': options.fontSize.value,
+					'--font-family': options.fontFamilyOption.value,
+					'--font-size': options.fontSizeOption.value,
 					'--font-color': options.fontColor.value,
-					'--container-width': options.containerWidth.value,
+					'--container-width': options.contentWidth.value,
 					'--bg-color': options.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm setDataHandler={submitHandler}></ArticleParamsForm>
+			<ArticleParamsForm setData={setData}></ArticleParamsForm>
 			<Article />
 		</main>
 	);

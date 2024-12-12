@@ -16,10 +16,10 @@ export type OptionType = {
 };
 
 export type OptionsObject = {
-	fontFamily: OptionType;
-	fontSize: OptionType;
+	fontFamilyOption: OptionType;
+	fontSizeOption: OptionType;
 	fontColor: OptionType;
-	containerWidth: OptionType;
+	contentWidth: OptionType;
 	backgroundColor: OptionType;
 };
 
@@ -176,7 +176,7 @@ export const fontSizeOptions: OptionType[] = [
 	{ title: '38px', value: '38px', className: 'font-size-38' },
 ];
 
-export const defaultArticleState = {
+export const defaultArticleState: OptionsObject = {
 	fontFamilyOption: fontFamilyOptions[0],
 	fontColor: fontColors[0],
 	backgroundColor: backgroundColors[0],
